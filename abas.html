@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<title>Abas com gota líquida</title>
+
+<!-- 1. as abas -->
+<nav class="barra">
+  <div class="liquido">
+    <i class="gota"></i><i class="rastro"></i>
+  </div>
+  <button class="ativa" data-cor="#ff5c93">🏠<b>Início</b></button>
+  <button data-cor="#7b61ff">🔍<b>Buscar</b></button>
+  <button data-cor="#12c79a">💬<b>Chat</b></button>
+  <button data-cor="#ff9f1c">🔔<b>Avisos</b></button>
+  <button data-cor="#2d9cff">👤<b>Perfil</b></button>
+</nav>
+<svg width="0" height="0" style="position: absolute">
+  <filter id="gosma" x="-20%" y="-150%"
+          width="140%" height="400%">
+    <feGaussianBlur stdDeviation="10" />
+    <feColorMatrix values="1 0 0 0 0  0 1 0 0 0
+      0 0 1 0 0  0 0 0 24 -10" />
+  </filter>
+</svg>
+
+<style>
+/* 2. fundo que muda de cor */
+body {
+  margin: 0; height: 100vh; display: grid;
+  place-items: center; font-family: sans-serif;
+  background: radial-gradient(circle at 25% 15%,
+    #ffffff66, transparent 55%) var(--cor, #ff5c93);
+  transition: background-color .6s;
+}
+
+/* 3. barra de vidro */
+.barra {
+  position: relative; display: flex; padding: 14px;
+  border-radius: 44px; background: #ffffff33;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 25px 60px #0005, inset 0 2px #fff9;
+}
+
+/* 4. botões */
+button {
+  position: relative; z-index: 1; width: 150px;
+  height: 120px; border: 0; background: none;
+  font-size: 46px; color: #fff; cursor: pointer;
+  display: grid; place-items: center;
+  transition: transform .4s, color .4s;
+}
+button b { font-size: 20px; }
+button.ativa { transform: translateY(-14px); }
+button.ativa b { color: var(--cor, #ff5c93); }
+
+/* 5. a gota líquida */
+.liquido {
+  position: absolute; inset: 0; filter: url(#gosma);
+}
+.gota, .rastro {
+  position: absolute; top: 14px; left: 14px;
+  width: 150px; height: 120px; border-radius: 60px;
+  background: #fff;
+  transition: left .5s cubic-bezier(.7, -.4, .3, 1.4);
+}
+.rastro { transition-duration: .9s; scale: .75; }
+
+/* 6. pulo do ícone e respingos */
+button.ativa { animation: pulo .6s; }
+@keyframes pulo {
+  40% { transform: translateY(-40px) scale(1.25); }
+}
+.pingo {
+  position: absolute; top: 50px; width: 46px;
+  height: 46px; border-radius: 50%; background: #fff;
+  animation: pingo 1.1s ease-out forwards;
+}
+@keyframes pingo {
+  to { transform: rotate(var(--a)) translateY(-130px)
+       scale(.45); }
+}
+</style>
+
+<script>
+// 7. clique: a gota escorre até a aba
+const abas = document.querySelectorAll("button");
+abas.forEach(aba => aba.addEventListener("click", () => {
+  document.querySelector(".ativa").classList.remove("ativa");
+  aba.classList.add("ativa");
+  for (const g of document.querySelectorAll(".gota, .rastro"))
+    g.style.left = aba.offsetLeft + "px";
+  document.body.style.setProperty("--cor", aba.dataset.cor);
+}));
+
+// 8. respingos quando a gota chega
+abas.forEach(aba => aba.addEventListener("click", () => {
+  for (let k = 0; k < 8; k++) {
+    const p = document.createElement("i");
+    p.className = "pingo";
+    p.style.left = aba.offsetLeft + 52 + "px";
+    p.style.setProperty("--a", k * 45 + "deg");
+    p.style.animationDelay = ".35s";
+    document.querySelector(".liquido").append(p);
+  }
+}));
+</script>
